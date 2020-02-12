@@ -29,7 +29,7 @@ class MyApp extends StatelessWidget {
      * display widget in terms other,
      * lower level widgets
      */
-    final wordPair = WordPair.random();
+    //final wordPair = WordPair.random();
     return MaterialApp(
       title: 'Welcome to Flutter',
       home: Scaffold(
@@ -45,8 +45,9 @@ class MyApp extends StatelessWidget {
           /* Center: aligns widget subtree
            * to center of screen (children)
            */
-          child: Text(wordPair.asPascalCase),
+          //child: Text(wordPair.asPascalCase),
           //PascalCase: UpperCamelCase
+          child: RandomWords(),
         ),
       ),
     );
@@ -75,6 +76,14 @@ class RandomWordsState extends State<RandomWords>{
    *     --favorite word pairs: heart icon, user add/remove
    *  -RandomWordsState depends on RandomWord class (implemented later)
    */
+  @override
+  /* Need to now add build method:
+   *   -generates word pairs: moving code from MyApp to here
+   */
+  Widget build(BuildContext context) {
+    final wordPair = WordPair.random();
+    return Text(wordPair.asPascalCase);
+  }
 }
 
 class RandomWords extends StatefulWidget{
@@ -82,5 +91,10 @@ class RandomWords extends StatefulWidget{
    * state class
    */
   @override
-
+  /* @override: marks instance member as overriding a superclass member with
+   * same name. Mainly: use methods: superclass out of programmer's control;
+   * i.e. in different package
+   * optional
+   */
+  RandomWordsState createState() => RandomWordsState();
 }
