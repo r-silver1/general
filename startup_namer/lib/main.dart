@@ -98,3 +98,7 @@ class RandomWords extends StatefulWidget{
    */
   RandomWordsState createState() => RandomWordsState();
 }
+
+/*
+ * Left off: step 4: Creating infinite scrolling listView, write app
+ */
