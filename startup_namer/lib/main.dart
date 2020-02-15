@@ -31,14 +31,16 @@ class MyApp extends StatelessWidget {
      */
     //final wordPair = WordPair.random();
     return MaterialApp(
-      title: 'Welcome to Flutter',
-      home: Scaffold(
+      /*title: 'Welcome to Flutter',
+      home: Scaffold(*/
+      title: 'Startup Name Generator',
+      home: RandomWords(),
         /* Scaffold: widget from material library
          * provides default app bar, title, and
          * body property
          * body: holds widget tree, home screen
          */
-        appBar: AppBar(
+        /*appBar: AppBar(
           title: Text('Welcome to FLutter'),
         ),
         body: Center(
@@ -49,7 +51,7 @@ class MyApp extends StatelessWidget {
           //PascalCase: UpperCamelCase
           child: RandomWords(),
         ),
-      ),
+      ),*/
     );
   }
 }
@@ -80,9 +82,67 @@ class RandomWordsState extends State<RandomWords>{
   /* Need to now add build method:
    *   -generates word pairs: moving code from MyApp to here
    */
+  final _suggestions = <WordPair>[];
+  //suggestions: saving suggested word pairs generated in a infinite list
+  // underscore before variable (_x) denotes privacy
+  final _biggerFont = const TextStyle(fontSize: 18.0);
+  //bigger font: variable, make font 18 point
+
   Widget build(BuildContext context) {
-    final wordPair = WordPair.random();
-    return Text(wordPair.asPascalCase);
+    /*final wordPair = WordPair.random();
+    return Text(wordPair.asPascalCase); */
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Startup Name Generator'),
+      ),
+      body: _buildSuggestions(),
+    );
+
+  }
+
+  Widget _buildSuggestions(){
+    /* build suggestions for infinite scrolling list
+     * Listview widget: builder: factory constructor, lists
+     *  -itemBuilder: factory builder/callback
+     *    -pass in BuildContext, row iterator i
+     *    -iterator: begins at 0, incremements each time function called
+     *    -increments twice each word pairing: once for ListTile, once for
+     *     divider; allows list grow infinitely w/ scroll
+     */
+    return ListView.builder(
+      padding: const EdgeInsets.all(16.0),
+      itemBuilder: /*1*/ (context, i){
+        /*itemBuilder: callback: called once per suggested pairing,
+         * place each suggestion (context) into ListTile row (i)
+         * Odd rows: add divider, visually seperate
+         * ListTile: single fixed-height row: contains text w/ leading/
+         * trailing icon i.e check box
+         */
+        if (i.isOdd) return Divider();
+          //isOdd returns true if odd
+          //all odd iterators: divider put in (between entries)
+          //1 pixel high divider
+          final index = i ~/ 2;
+          //~/: truncate divide; like floor (drop fractional digits, int cast)
+          if(index >= _suggestions.length) {
+            _suggestions.addAll(generateWordPairs().take(10));
+            /* If you've reached end of word pairing (index>=
+             * _suggestions.length), generate 10 more and add them
+             * to suggestions list
+             */
+          }
+          return _buildRow(_suggestions[index]);
+
+      }
+    );
+  }
+  Widget _buildRow(WordPair pair){
+    return ListTile(
+        title: Text(
+          pair.asPascalCase,
+          style: _biggerFont,
+        )
+    );
   }
 }
 
