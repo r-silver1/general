@@ -87,6 +87,10 @@ class RandomWordsState extends State<RandomWords>{
   // underscore before variable (_x) denotes privacy
   final _biggerFont = const TextStyle(fontSize: 18.0);
   //bigger font: variable, make font 18 point
+  final Set<WordPair> _saved = Set<WordPair>();
+  /* Set of saved word pairings, favorited; Set: should not allow duplicate
+   * entries, while list would allow duplicate entries
+   */
 
   Widget build(BuildContext context) {
     /*final wordPair = WordPair.random();
@@ -137,11 +141,24 @@ class RandomWordsState extends State<RandomWords>{
     );
   }
   Widget _buildRow(WordPair pair){
+    //first: check if pair already saved; check set already saved for pair
+    final bool alreadySaved = _saved.contains(pair);
     return ListTile(
         title: Text(
           pair.asPascalCase,
           style: _biggerFont,
-        )
+        ),
+        //next: create heart (trailing) icon; native part of a ListTile
+        trailing: Icon(
+          /*use ternary operator ?: <bool> ? <option1>:<option2>, if bool true,
+           * use option 1, else use option 2
+           */
+          //note: 'favorite:' constant, material class: built in heart icon
+          //first check if pair saved to determine icon, heart or line
+          alreadySaved ? Icons.favorite: Icons.favorite_border,
+          //next set color based on already saved or not; whether heart colored
+          color: alreadySaved ? Colors.red :null,
+        ),
     );
   }
 }
