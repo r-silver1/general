@@ -34,6 +34,16 @@ class MyApp extends StatelessWidget {
       /*title: 'Welcome to Flutter',
       home: Scaffold(*/
       title: 'Startup Name Generator',
+      // edit default them to change theme of app
+      theme: ThemeData(
+        /*ThemeData: class, material library, color and typography values,
+         *Material design theme... access through builder, widget context (theme
+         * data of ancestor classes
+         */
+        primaryColor: Colors.white,
+        dividerColor: Colors.blueAccent,
+        backgroundColor: Colors.orange[200],
+      ),
       home: RandomWords(),
         /* Scaffold: widget from material library
          * provides default app bar, title, and
@@ -69,6 +79,19 @@ class MyApp extends StatelessWidget {
  *  -Creates State class, RandomWordsState
  */
 
+class RandomWords extends StatefulWidget{
+  /* RandomWords: stateful widget for RandomWordsState; mostly just create its
+   * state class
+   */
+  @override
+  /* @override: marks instance member as overriding a superclass member with
+   * same name. Mainly: use methods: superclass out of programmer's control;
+   * i.e. in different package
+   * optional
+   */
+  RandomWordsState createState() => RandomWordsState();
+}
+
 class RandomWordsState extends State<RandomWords>{
   /* Declaration: State<RandomWords>
    *  -generic State<> class: specialized for use with "RandomWords"
@@ -92,16 +115,91 @@ class RandomWordsState extends State<RandomWords>{
    * entries, while list would allow duplicate entries
    */
 
+
+  /*builder: display actual content, on screen
+   *Widget tree: all the widgets in the app, hierarchical, their current states
+   * builder class: set of methods use from stateless widget build method and
+   * from state objects
+   * build context: passed into the builder; context of widget objects, parents
+   * or ancestors; inheritance of built-in-object features? where you are in
+   * widget tree... widget inherits properties from parents; leave unchanged
+   * for this app I belive (just "context")
+   */
+  //note: navigator manages routes for flutter apps; new route pushed to app,
+  //new route displayed. popped, go back old display
   Widget build(BuildContext context) {
     /*final wordPair = WordPair.random();
     return Text(wordPair.asPascalCase); */
     return Scaffold(
       appBar: AppBar(
         title: Text('Startup Name Generator'),
+        //add list icon: on click, new route pushed to stack
+        actions: <Widget>[
+          //<Widget>[]: way for widget: have multiple children? action: takes
+          //array of widgets as children; widget property actions
+            //iconbutton: material library: class, display icons, clickable
+            //this icon: on push: go to pushshaved,
+            IconButton(icon: Icon(Icons.list), onPressed: _pushSaved),
+        ],
+
       ),
       body: _buildSuggestions(),
     );
 
+  }
+
+  void _pushSaved(){
+    /* now, build route: push to navigator stack (change screen display to
+     * saved pairs screen).
+     */
+    Navigator.of(context).push(
+      /*Add MaterialPageRoute and builder: route to replace entire screen;
+       * type of transistion depends on OS, by default maintainState positive:
+       * previous route maintained in memory
+       *type T: specify return type of route; return is supplied to first route
+       * when new route popped off of navigator stack
+       */
+      MaterialPageRoute<void>(
+        builder: (BuildContext context) {
+          //map: key.value pairs; creating map?
+          //generate listTile rows; iterable: list that can be iteraded over
+          //using map from saved as iterable? puting in options for map?
+          //making an iterable of "listtiles" (same tile used before)
+          final Iterable<ListTile> tiles = _saved.map(
+            //for each wordpair in set, return a ListTile with properties
+            (WordPair pair) {
+              return ListTile(
+                title: Text(
+                  pair.asPascalCase,
+                  style: _biggerFont,
+                ),
+              );
+            },
+          );
+          //make a list widget to display iterable ListTile of saved pairs
+          final List<Widget> divided = ListTile
+            //dividetiles: built in ListTile method, add horizontal space
+            .divideTiles(
+              context: context,
+              //tiles: iterable made above
+              tiles: tiles,
+            )
+            //convert final listtiles+space into list, .toList
+            .toList();
+          /*want builder to return scaffold, w/ app bar, named saved sugg.s
+          and body of new route: listview, contain listtile rows and seperators
+          we want a listview to fit into the scaffold build in listview
+          */
+          //similar to making first scaffold for main route body
+          return Scaffold(
+            appBar: AppBar(
+              title: Text('Saved Suggestions'),
+            ),
+            body: ListView(children: divided),
+          );
+        },
+      ),
+    );
   }
 
   Widget _buildSuggestions(){
@@ -159,22 +257,27 @@ class RandomWordsState extends State<RandomWords>{
           //next set color based on already saved or not; whether heart colored
           color: alreadySaved ? Colors.red :null,
         ),
+        /*add icon interactivity: tap to heart favorite or unfavorite; checks if
+         *already favorite via alreadySaved, updates to add/remove from savedSet
+         */
+        onTap: () {
+          //set the state of the icon (i think)
+          /*since we made ternary statements above just changing set alone will
+            *handle formatting
+           */
+          setState(() {
+            if(alreadySaved) {
+              _saved.remove(pair);
+            } else{
+              _saved.add(pair);
+            }
+          });
+        },
     );
   }
 }
 
-class RandomWords extends StatefulWidget{
-  /* RandomWords: stateful widget for RandomWordsState; mostly just create its
-   * state class
-   */
-  @override
-  /* @override: marks instance member as overriding a superclass member with
-   * same name. Mainly: use methods: superclass out of programmer's control;
-   * i.e. in different package
-   * optional
-   */
-  RandomWordsState createState() => RandomWordsState();
-}
+
 
 /*
  * Left off: step 4: Creating infinite scrolling listView, write app
