@@ -146,12 +146,34 @@ class CryptoListState extends State<CryptoList>{
   Widget build(BuildContext context){
     //implement material design visual layout API class
     return Scaffold(
-      appBar: AppBar(
-        title: Text('CryptoList'),
-        actions: <Widget>[
-          //use icon to view favorites
-          new IconButton(icon: const Icon(Icons.list), onPressed: _pushSaved),
-        ],
+      appBar: PreferredSize(
+
+        preferredSize: Size.fromHeight(200.0),
+        child: AppBar(
+          //title: Text('CryptoList'),
+          title: Row(
+
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            //crossAxisAlignment: CrossAxisAlignment.center,
+
+            children: [
+              Image.asset(
+                'assets/moneyTreeAndroid.png',
+                fit: BoxFit.cover,
+                height: 150,
+              ),
+              Container(
+                padding: const EdgeInsets.all(8.0),
+                child: Text('CryptoList'),
+              ),
+            ],
+          ),
+          actions: <Widget>[
+            //use icon to view favorites
+            new IconButton(
+                icon: const Icon(Icons.list), onPressed: _pushSaved),
+          ],
+        )
       ),
       //body of scaffold: list
       body: _buildCryptoList(),
