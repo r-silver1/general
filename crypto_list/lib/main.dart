@@ -88,6 +88,11 @@ class CryptoListState extends State<CryptoList>{
     String _apiURL =
       //URL to get the price data (API)
       "http://api.coinmarketcap.com/v1/ticker/";
+
+    //before calling API (before loading begins), set _loading to true
+    setState(() {
+      this._loading = true;
+    });
     //waits for decision
     http.Response response = await http.get(_apiURL);
     setState(() {
@@ -95,6 +100,8 @@ class CryptoListState extends State<CryptoList>{
           //decode the json (api) data into a readable
           //format
           jsonDecode(response.body);
+      //we have now loaded the json and list, set loading false
+      this._loading = false;
       print(_cryptoList); //prints the list
       });
       return;
@@ -128,6 +135,21 @@ class CryptoListState extends State<CryptoList>{
       child: new Text(name[0]),
     );
   }
+
+  //implement getmainbody function, loading bar if _loading is true
+  _getMainBody() {
+    if (_loading) {
+      //loading API is true, create new center container for progress bar
+      return new Center(
+        //use built in circular loading bar; child
+        child: new CircularProgressIndicator(),
+      );
+    } else {
+      //loading is done, return the rest of the app as body
+      return _buildCryptoList();
+    }
+  }
+
   /* Next, override initState method to change how state of app initializes
    * have to override and then call super.initState(); we use to enable a call
    * to getCryptoPrice on app start and set the app state
@@ -146,37 +168,41 @@ class CryptoListState extends State<CryptoList>{
   Widget build(BuildContext context){
     //implement material design visual layout API class
     return Scaffold(
-      appBar: PreferredSize(
+      appBar:// PreferredSize(
 
-        preferredSize: Size.fromHeight(200.0),
-        child: AppBar(
+        //preferredSize: Size.fromHeight(200.0),
+         // preferredSize: Size(100, 150),
+        AppBar(
           //title: Text('CryptoList'),
-          title: Row(
+          title: Padding(
+            padding: EdgeInsets.only(top: 5.0, bottom: 5.0),
+            child: Row(
 
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            //crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              //crossAxisAlignment: CrossAxisAlignment.center,
 
-            children: [
-              Image.asset(
-                'assets/moneyTreeAndroid.png',
-                fit: BoxFit.cover,
-                height: 150,
-              ),
-              Container(
-                padding: const EdgeInsets.all(8.0),
-                child: Text('CryptoList'),
-              ),
-            ],
+              children: [
+                Image.asset(
+                  'assets/moneyTreeAndroid.png',
+                  //fit: BoxFit.scaleDown,
+                  height: 75,
+                ),
+                Container(
+                  //padding: const EdgeInsets.all(8.0),
+                  child: Text('CryptoList'),
+                ),
+              ],
+            ),
           ),
           actions: <Widget>[
             //use icon to view favorites
             new IconButton(
                 icon: const Icon(Icons.list), onPressed: _pushSaved),
           ],
-        )
-      ),
+        ),
+      //),
       //body of scaffold: list
-      body: _buildCryptoList(),
+      body: _getMainBody(),
     );
   }
 
