@@ -146,7 +146,18 @@ class CryptoListState extends State<CryptoList>{
       );
     } else {
       //loading is done, return the rest of the app as body
-      return _buildCryptoList();
+      /*also, add pull to refresh with RefreshIndicator, uses Material class
+       * "swipe to refresh." Uses the child Scrollable, in this case the list.
+       * swipe to begin refresh, have to swipe all the way. Possible becasue
+       * widget stateful
+       */
+      return new RefreshIndicator(
+        child: _buildCryptoList(),
+        /*below: set action to take place on refresh, in this case call get
+         *crypto prices to update price
+         */
+        onRefresh: getCryptoPrices,
+      );
     }
   }
 
