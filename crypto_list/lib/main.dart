@@ -217,8 +217,57 @@ class CryptoListState extends State<CryptoList>{
     );
   }
 
-  //use later: favorites
-  void _pushSaved() {}
+  /*use later: favorites: called to initiate navigate to new page (route) when
+   *AppBar button pressed
+   */
+  void _pushSaved() {
+    /*Navigator: manage stack of Route objects and built in stack functions,
+     *used when you want to leave one page and return later. AppBar: built in
+     * back button to handle returning (Navigator.pop called)
+     */
+    //context: location in widget tree currently (handle current stack position)
+    Navigator.of(context).push(
+      /* MaterialPageRoute: replace entire screen: platform adaptive transition,
+       * contents defined by internal builder
+       */
+      new MaterialPageRoute<void>(
+        //define contents of route
+        builder: (BuildContext context) {
+          /* favorited cryptocurrency maps are currently stored in _saved; now
+           * we iterate through saved sequentially in new list
+           */
+          final Iterable<ListTile> tiles = _saved.map(
+            //below: crypto will be the index variable for map
+            (crypto){
+              //same kind of list as before
+              return new ListTile(
+                //get letter to lead tile with in blue
+                leading: _getLeadingWidget(crypto['name'], Colors.blue),
+                title: Text(crypto['name']),
+                subtitle: Text(
+                  //round
+                  cryptoPrice(crypto),
+                  style: _boldStyle,
+                ),
+              );
+            },
+          );
+          //make a divided list of the above ListTiles (class?)
+          final List<Widget> divided = ListTile.divideTiles(
+            context: context,
+            tiles: tiles,
+          ).toList(); //end: make iterable tiles (were before) into list
+          //return a scaffold: title, and body saved cryptos
+          return new Scaffold(
+            appBar: new AppBar(
+              title: const Text('Saved Cryptos'),
+            ),
+            body: new ListView(children: divided),
+          );
+        },
+      ),
+    );
+  }
 
   //widget that builds the list
   Widget _buildCryptoList() {
